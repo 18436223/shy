@@ -5,10 +5,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
-
 
 import com.yychat.model.Message;
 import com.yychat.model.User;
@@ -38,10 +38,37 @@ public class StartServer {
 				System.out.println(passWord);
 				
 				//实现密码验证功能
+				
+				//使用数据库进行用户身份认证
+				//1、加载驱动程序
+				Class.forName("com.mysql.jdbc.Driver");
+				System.out.println("已经加载了数据库驱动！");
+				//2、连接数据库
+				String url="jdbc:mysql://127.0.0.1:3306/yychat";
+				//中文用户名必须用下面的url
+				//String url="jdbc:mysql://127.0.0.1:3306/yychat?useUnicode=true&characterEncoding=UTF-8";
+				String dbUser="root";
+				String dbPass="";				
+				Connection conn=DriverManager.getConnection(url,dbUser,dbPass);
+				
+				//3、创建PreparedStatement对象，用来执行SQL语句
+				String user_Login_Sql="select * from user where username=? and password=?";
+				PreparedStatement ptmt=conn.prepareStatement(user_Login_Sql);
+				ptmt.setString(1, userName);
+				ptmt.setString(2, passWord);
+				
+				//4、执行查询，返回结果集
+				ResultSet rs=ptmt.executeQuery();
+				
+				//5、根据结果集来判断是否能登录
+				boolean loginSuccess=rs.next();	
+
+				
+				
 				mess=new Message();
 				mess.setSender("Server");
 				mess.setReceiver(userName);
-				if(passWord.equals("123456")){//对象比较
+				if(loginSuccess){//对象比较
 					//告诉客户端密码验证通过的消息，可以创建Message类				
 					mess.setMessageType(Message.message_LoginSuccess);//"1"为验证通过				
 				}else {
@@ -50,7 +77,7 @@ public class StartServer {
 				sendMessage(s,mess);
 				
 				//应该新建一个接收线程
-				if(passWord.equals("123456"))
+				if(loginSuccess)
 				{
 					//激活上线用户图标步骤一；在此处把自己登录成功的消息发送到在该用户之前登录的所以用户
 					mess.setMessageType(Message.message_NewOnlineFriend);
@@ -78,6 +105,9 @@ public class StartServer {
 		} catch (IOException e) {
 			e.printStackTrace();//处理异常
 		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
