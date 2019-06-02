@@ -5,13 +5,10 @@
 		<item value="false" key="WizardProjectsImportPage.STORE_COPY_PROJECT_ID"/>
 		<item value="false" key="WizardProjectsImportPage.STORE_ARCHIVE_SELECTED"/>
 		<list key="WizardProjectsImportPage.STORE_DIRECTORIES">
-			<item value="F:\Java作业\add_function"/>
-			<item value="G:\视频\JAVA 视频\第十九次课"/>
+			<item value="F:\jax"/>
 		</list>
 		<list key="WizardProjectsImportPage.STORE_ARCHIVES">
 			<item value=""/>
 		</list>
-	</section>
-	<section name="NewWizardAction">
 	</section>
 </section>
